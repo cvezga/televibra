@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class InfluxWriterRunnable2 implements Runnable {
 
-	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+	private ConcurrentLinkedQueue<SensorData> queue = new ConcurrentLinkedQueue<>();
 	
     private int ndtos;	
 
@@ -23,22 +23,24 @@ public class InfluxWriterRunnable2 implements Runnable {
 		while (true) {
 			try {
 
-				if (queue.size() < this.ndtos) {
-
-					Thread.sleep(10);
+				if (queue.size() == 0) {
+					Thread.sleep(250);
 					continue;
 				}
 
 				System.out.println("InfluxWriterRunnable2 processing dps");
 				StringBuffer sb = new StringBuffer();
 				while (queue.size() > 0) {
-					String entry =  queue.remove();
-					String[] data = entry.split("\\|");
-					String x = data[1].trim();
-					String ts = data[0].trim();
-					String urlParameters = "Arduino_Cesar,name=A01 x=" + x + " " + ts + "000\n";
-					// System.out.println(urlParameters);
-					sb.append(urlParameters);
+					SensorData sd =  queue.remove();
+					
+					for(int i=0; i<sd.getLength(); i++) {
+						int x = sd.getValue(i);
+						long ts = sd.getTime(i);
+						String urlParameters = "Arduino_Cesar,name=A01 x=" + x + " " + ts + "000\n";
+						sb.append(urlParameters);
+					}
+					 
+					
 
 				}
 
@@ -54,10 +56,6 @@ public class InfluxWriterRunnable2 implements Runnable {
 
 	}
 
-	public void write(String time, String value) {
-
-		queue.add(time + "|" + value);
-	}
 
 	private void sendPost(String dps) throws Exception {
 		System.out.println("InfluxWriterRunnable2 sending post to InfluxDB ...");
@@ -97,6 +95,11 @@ public class InfluxWriterRunnable2 implements Runnable {
 		// print result
 		// System.out.println(response.toString());
 
+	}
+
+	public void queue(SensorData sd) {
+		this.queue.add(sd);
+		
 	}
 
 }
