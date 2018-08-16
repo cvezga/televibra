@@ -10,30 +10,35 @@ import javax.imageio.ImageIO;
 
 public class ImageWriterRunnable implements Runnable {
 
-	private ConcurrentLinkedQueue<SensorData> queue = new ConcurrentLinkedQueue<>();
-	
-	 private int ndtos;	
+	private static final long IDLE_TIME_REPORT = 10_000;
 
-		public ImageWriterRunnable(int ndots) {
-			this.ndtos=ndots;
-		}
+	private ConcurrentLinkedQueue<SensorData> queue = new ConcurrentLinkedQueue<>();
+
+	public ImageWriterRunnable() {
+
+	}
 
 	@Override
 	public void run() {
 		System.out.println("ImageWriterRunnable started...");
+		long lastTimeProcess = System.currentTimeMillis();
 		int count = 0;
 		while (true) {
 			try {
 
 				if (queue.size() == 0) {
+					if (System.currentTimeMillis() - lastTimeProcess > IDLE_TIME_REPORT) {
+						System.out.println("ImageWriterRunnable idle after " + IDLE_TIME_REPORT);
+						lastTimeProcess = System.currentTimeMillis();
+					}
 					Thread.sleep(250);
 					continue;
 				}
 
 				System.out.println("ImageWriterRunnable processing dps");
-				
+
 				SensorData sd = queue.remove();
-				
+
 				BufferedImage image = new BufferedImage(620, 200, BufferedImage.TYPE_3BYTE_BGR);
 
 				Graphics g = image.getGraphics();
@@ -42,10 +47,10 @@ public class ImageWriterRunnable implements Runnable {
 				int y1 = 0;
 				int x2 = 0;
 				int y2 = 0;
-			
-				for(int i=0; i<sd.getLength(); i++) {
+
+				for (int i = 0; i < sd.getLength(); i++) {
 					int x = sd.getValue(i);
-				
+
 					y2 = 200 - x;
 					x2++;
 					g.drawLine(x1, y1, x2, y2);
@@ -76,7 +81,7 @@ public class ImageWriterRunnable implements Runnable {
 
 	public void queue(SensorData sd) {
 		this.queue.add(sd);
-		
+
 	}
 
 }

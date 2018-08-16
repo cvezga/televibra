@@ -8,22 +8,28 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class InfluxWriterRunnable2 implements Runnable {
+	
+	private static final long IDLE_TIME_REPORT = 10_000;
 
 	private ConcurrentLinkedQueue<SensorData> queue = new ConcurrentLinkedQueue<>();
 	
-    private int ndtos;	
+     
 
-	public InfluxWriterRunnable2(int ndots) {
-		this.ndtos=ndots;
+	public InfluxWriterRunnable2() {
 	}
 
 	@Override
 	public void run() {
 		System.out.println("InfluxWriterRunnable2 started...");
+		long lastTimeProcess=System.currentTimeMillis();
 		while (true) {
 			try {
 
 				if (queue.size() == 0) {
+					if(System.currentTimeMillis()-lastTimeProcess>IDLE_TIME_REPORT) {
+						System.out.println("InfluxWriterRunnable2 idle after "+IDLE_TIME_REPORT);
+						lastTimeProcess=System.currentTimeMillis();
+					}
 					Thread.sleep(250);
 					continue;
 				}
