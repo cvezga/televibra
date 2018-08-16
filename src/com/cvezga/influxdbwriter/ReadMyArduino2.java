@@ -12,14 +12,11 @@ public class ReadMyArduino2 {
 
 		boolean isLocal = args.length == 1;
 
-		String ip;
-		if (isLocal) {
-			ip = "192.168.0.102";
-		} else {
-			ip = "186.15.10.211";
-		}
+		String ip = args[0];
+		int port = Integer.parseInt(args[1]);
+		
 
-		SensorReaderRunnable sensorReader = new SensorReaderRunnable(ip, 5001, NDOTS);
+		SensorReaderRunnable sensorReader = new SensorReaderRunnable(ip, port, NDOTS);
 
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 

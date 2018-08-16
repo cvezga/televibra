@@ -60,7 +60,7 @@ public class SensorReaderRunnable implements Runnable {
 
 	private void read() throws UnknownHostException, IOException {
 
-		System.out.println("Reading...");
+		System.out.println("Reading "+this.ip+":"+this.port+" ...");
 		long t1 = System.currentTimeMillis();
 
 		Socket s = new Socket(this.ip, this.port);
