@@ -16,6 +16,7 @@ public class SensorReaderRunnable implements Runnable {
 	private ExecutorService executor;
 	private InfluxWriterRunnable2 writer;
 	private ImageWriterRunnable iwriter;
+	private GraphDataWriterRunnable gwriter;
 
 	public SensorReaderRunnable(String ip, int port, int ndots) {
 		this.ip = ip;
@@ -49,12 +50,14 @@ public class SensorReaderRunnable implements Runnable {
 		System.out.println("Creating writers...");
 		writer = new InfluxWriterRunnable2();
 		iwriter = new ImageWriterRunnable();
-
+		gwriter = new GraphDataWriterRunnable();
+		
 		// ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor = Executors.newFixedThreadPool(2);
+		executor = Executors.newFixedThreadPool(3);
 
 		executor.execute(writer);
 		executor.execute(iwriter);
+		executor.execute(gwriter);
 
 	}
 
