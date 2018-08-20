@@ -115,6 +115,7 @@ public class SensorReaderRunnable implements Runnable {
 			if (sd.isInitialized()) {
 				writer.queue(sd);
 				iwriter.queue(sd);
+				gwriter.queue(sd);
 			} else {
 				System.out.println("SendorData was not initialized!");
 			}
