@@ -21,7 +21,7 @@ public class SensorData {
 	}
 	
 	public boolean isInitialized() {
-		return ptr<times.length;
+		return !(ptr<times.length);
 	}
 
 	public int getLength() {
